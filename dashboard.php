@@ -4,7 +4,7 @@ session_start();
 require_once 'assets/class/Database.php';
 require_once 'assets/class/Security.php';
 
-if (!Security::isLogged($_SESSION['uid'], $_SESSION['token'])) header('Location: /admin/connexion');
+if (!Security::isLogged()) header('Location: /admin/connexion');
 
 $db = Database::getInstance();
 ?>
@@ -14,7 +14,7 @@ $db = Database::getInstance();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, user-scalable=yes, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Connexion - Shortened</title>
+    <title>Dashboard - Shortened</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css">
     <style>
         body {

@@ -5,8 +5,12 @@ class Security
 
     private static int $rank;
 
-    public static function isLogged(string $id, string $token): bool
+    public static function isLogged(): bool
     {
+        session_commit();
+        session_start();
+        $id = $_SESSION['uid'] ?? "";
+        $token = $_SESSION['token'] ?? "";
         include_once $_SERVER['DOCUMENT_ROOT'] . '/assets/class/Database.php';
         $db = Database::getInstance();
         $statement = $db->prepare("SELECT username, password, rank FROM admin WHERE id = ?");
