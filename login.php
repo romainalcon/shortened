@@ -1,6 +1,23 @@
 <?php
+session_start();
+
 require_once 'assets/class/Database.php';
 $db = Database::getInstance();
+$error = false;
+
+if (isset($_POST['username'], $_POST['password'])) {
+    $statement = $db->prepare("SELECT id, password FROM admin WHERE username = ?");
+    $statement->execute([$_POST['username']]);
+    if ($statement->rowCount() == 1) {
+        $result = $statement->fetch();
+        if (password_verify($_POST['password'], $result['password'])) {
+            $_SESSION['uid'] = $result['id'];
+            $_SESSION['token'] = password_hash($_POST['username'].$result['password'], PASSWORD_DEFAULT);
+            header('Location: /admin/');
+        }
+    }
+    $error = true;
+}
 ?>
 <!doctype html>
 <html lang="fr">
@@ -44,8 +61,11 @@ $db = Database::getInstance();
 </head>
 <body class="text-center">
     <main class="form-signin">
-        <form action="">
+        <form action="" method="post">
             <h1 class="mb-4 h2 fw-normal">Shortened</h1>
+            <?php if ($error): ?>
+            <p class="mb-4 text-danger">Un problème d'authentification a eu lieu.</p>
+            <?php endif; ?>
             <div class="form-floating">
                 <input type="text" class="form-control" id="usernameForm" name="username" placeholder="johndoe@gmail.com">
                 <label for="usernameForm">Nom d'utilisateur</label>

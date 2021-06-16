@@ -2,9 +2,14 @@ Options +FollowSymlinks
 RewriteEngine On
 
 RewriteRule ^$ /index.php?link=none [L]
+RewriteRule ^encoder/([a-zA-Z0-9-]*)$ /encode.php?link=$1 [L]
 RewriteRule ^([a-zA-Z0-9-]*)$ /index.php?link=$1 [L]
 RewriteRule ^admin/connexion$ /login.php [L]
+RewriteRule ^admin/deconnexion$ /logout.php [L]
 RewriteRule ^admin/$ /dashboard.php [L]
+RewriteRule ^admin/domaine/$ /domaines.php [L]
+RewriteRule ^admin/lien/$ /liens.php [L]
+RewriteRule ^admin/utilisateur/$ /utilisateurs.php [L]
 
 #RewriteCond %{HTTPS} off
 #RewriteRule (.*) https://%{HTTP_HOST}%{REQUEST_URI} [R,L]
