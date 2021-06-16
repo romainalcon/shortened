@@ -8,14 +8,32 @@ if (!Security::isLogged()) header('Location: /admin/connexion');
 
 $db = Database::getInstance();
 
-if (Security::getRank() >= 4) {
-    $statement = $db->prepare("SELECT id, name FROM domains");
-    $statement->execute();
-} else {
-    $statement = $db->prepare("SELECT domains.id, domains.name FROM domains INNER JOIN attribute ON attribute.domainsid = domains.id WHERE attribute.adminid = ?");
-    $statement->execute([$_SESSION['uid']]);
+if (Security::getRank() <= 2) {
+    header('Location: /admin/');
 }
-$result = $statement->fetchAll();
+if (!isset($_GET['id'])) {
+    header('Location: /admin/domaine/');
+}
+
+if (Security::getRank() >= 4) {
+    $statement = $db->prepare("SELECT name FROM domains WHERE id = ?");
+    $statement->execute([$_GET['id']]);
+} else {
+    $statement = $db->prepare("SELECT domains.name FROM domains INNER JOIN attribute ON attribute.domainsid = domains.id WHERE attribute.adminid = ? AND domains.id = ?");
+    $statement->execute([$_SESSION['uid'], $_GET['id']]);
+}
+
+if ($statement->rowCount() != 1) {
+    header('Location: /admin/domaine/');
+}
+
+$result = $statement->fetch();
+
+if (isset($_POST['confirm']) && $_POST['confirm'] == 'valid') {
+    $statement = $db->prepare("DELETE FROM domains WHERE id = ?");
+    $statement->execute([$_GET['id']]);
+    header('Location: /admin/domaine/');
+}
 
 ?>
 <!doctype html>
@@ -24,7 +42,7 @@ $result = $statement->fetchAll();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, user-scalable=yes, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Liste des domaines - Shortened</title>
+    <title>Modifier un domain - Shortened</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css">
     <style>
         body {
@@ -55,32 +73,14 @@ $result = $statement->fetchAll();
     <?php include_once 'assets/include/menu.php'; ?>
     <main class="p-4">
         <div class="d-flex align-items-center justify-content-between">
-            <h1 class="h3">Liste des domaines</h1>
-            <a href="/admin/domaine/ajouter/" class="btn btn-success">Ajouter</a>
+            <h1 class="h3">Modifier un domaine</h1>
         </div>
-        <table class="table">
-            <thead>
-            <tr>
-                <th scope="col">#</th>
-                <th scope="col">Domaine</th>
-                <th scope="col">Action</th>
-            </tr>
-            </thead>
-            <tbody>
-            <?php foreach ($result as $item): ?>
-            <tr>
-                <th scope="row"><?= $item['id'] ?></th>
-                <td><?= $item['name'] ?></td>
-                <td>
-                    <div class="btn-group btn-group-sm" role="group">
-                        <a href="/admin/domaine/modifier/<?= $item['id'] ?>" class="btn btn-warning">Modifier</a>
-                        <a href="/admin/domaine/supprimer/<?= $item['id'] ?>" class="btn btn-danger">Supprimer</a>
-                    </div>
-                </td>
-            </tr>
-            <?php endforeach; ?>
-            </tbody>
-        </table>
+        <form method="post" action="">
+            <input type="hidden" name="confirm" value="valid">
+            <p>Etes-vous sure de vouloir supprimer : <?= $result['name'] ?> ?</p>
+            <button class="btn btn-success" type="submit">Supprimer</button>
+            <a class="btn btn-danger" href="/admin/domaine/">Annuler</a>
+        </form>
     </main>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js"></script>
 </body>
