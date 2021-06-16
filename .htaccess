@@ -12,6 +12,9 @@ RewriteRule ^admin/domaine/ajouter/$ /domaines_ajouter.php [L]
 RewriteRule ^admin/domaine/modifier/([0-9]*)$ /domaines_modifier.php?id=$1 [L]
 RewriteRule ^admin/domaine/supprimer/([0-9]*)$ /domaines_supprimer.php?id=$1 [L]
 RewriteRule ^admin/lien/$ /liens.php [L]
+RewriteRule ^admin/lien/ajouter/$ /liens_ajouter.php [L]
+RewriteRule ^admin/lien/modifier/([0-9]*)$ /liens_modifier.php?id=$1 [L]
+RewriteRule ^admin/lien/supprimer/([0-9]*)$ /liens_supprimer.php?id=$1 [L]
 RewriteRule ^admin/utilisateur/$ /utilisateurs.php [L]
 
 #RewriteCond %{HTTPS} off

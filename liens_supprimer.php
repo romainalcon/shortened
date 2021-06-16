@@ -12,27 +12,27 @@ if (Security::getRank() <= 2) {
     header('Location: /admin/');
 }
 if (!isset($_GET['id'])) {
-    header('Location: /admin/domaine/');
+    header('Location: /admin/lien/');
 }
 
 if (Security::getRank() >= 4) {
-    $statement = $db->prepare("SELECT name FROM domains WHERE id = ?");
+    $statement = $db->prepare("SELECT name FROM links WHERE id = ?");
     $statement->execute([$_GET['id']]);
 } else {
-    $statement = $db->prepare("SELECT domains.name FROM domains INNER JOIN attribute ON attribute.domainsid = domains.id WHERE attribute.adminid = ? AND domains.id = ?");
+    $statement = $db->prepare("SELECT links.name FROM links INNER JOIN attribute ON attribute.domainsid = links.domainsid WHERE  attribute.adminid = ? AND links.id = ?");
     $statement->execute([$_SESSION['uid'], $_GET['id']]);
 }
 
 if ($statement->rowCount() != 1) {
-    header('Location: /admin/domaine/');
+    header('Location: /admin/lien/');
 }
 
 $result = $statement->fetch();
 
 if (isset($_POST['confirm']) && $_POST['confirm'] == 'valid') {
-    $statement = $db->prepare("DELETE FROM domains WHERE id = ?");
+    $statement = $db->prepare("DELETE FROM links WHERE id = ?");
     $statement->execute([$_GET['id']]);
-    header('Location: /admin/domaine/');
+    header('Location: /admin/lien/');
 }
 
 ?>
@@ -73,13 +73,13 @@ if (isset($_POST['confirm']) && $_POST['confirm'] == 'valid') {
     <?php include_once 'assets/include/menu.php'; ?>
     <main class="p-4">
         <div class="d-flex align-items-center justify-content-between">
-            <h1 class="h3">Supprimer un domaine</h1>
+            <h1 class="h3">Supprimer un lien</h1>
         </div>
         <form method="post" action="">
             <input type="hidden" name="confirm" value="valid">
             <p>Etes-vous sure de vouloir supprimer : <?= $result['name'] ?> ?</p>
             <button class="btn btn-success" type="submit">Supprimer</button>
-            <a class="btn btn-danger" href="/admin/domaine/">Annuler</a>
+            <a class="btn btn-danger" href="/admin/lien/">Annuler</a>
         </form>
     </main>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js"></script>
